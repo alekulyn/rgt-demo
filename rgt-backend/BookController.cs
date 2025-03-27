@@ -2,30 +2,51 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BookApp;
 
-[Route("/api/books")]
+[Route("api/books")]
 [ApiController]
-public class BookController : ControllerBase {
-  [HttpGet]
-  public ActionResult<IEnumerable<BookModel>> GetBook (int id) {
+public class BookController : ControllerBase
+{
+    IBookFactory _factory;
 
-    return null;
-  }
+    BookController()
+    {
+        _factory = new BookFactory();
+    }
 
-  [HttpGet]
-  public ActionResult<IEnumerable<BookModel>> GetBooks () {
+    [HttpGet]
+    public Task<BookModel> GetBook(int id)
+    {
+        var book = _factory.GetBooks(id);
 
-    return null;
-  }
+        return Task.FromResult(book.FirstOrDefault());
+    }
 
-  [HttpPut]
-  public ActionResult<IEnumerable<BookModel>> ModifyBook () {
+    [HttpGet]
+    public IEnumerable<BookModel> GetBooks()
+    {
+        var books = _factory.GetBooks();
 
-    return null;
-  }
+        return books;
+    }
 
-  [HttpPost]
-  public ActionResult<IEnumerable<BookModel>> AddBook (BookModel book) {
+    [HttpPut]
+    public ActionResult<int> UpdateBook(EditBookRequest request)
+    {
+        _factory.ModifyBook(request.id, request.book);
+        return null;
+    }
 
-    return null;
-  }
+    [HttpPost]
+    public ActionResult<int> AddBook(BookModel book)
+    {
+        _factory.AddBook(book);
+        return null;
+    }
+
+    [HttpDelete]
+    public ActionResult<IEnumerable<BookModel>> DeleteBook(int bookId)
+    {
+        _factory.DeleteBook(bookId);
+        return null;
+    }
 }
